@@ -1,0 +1,11 @@
+D:\Programming\Rust\Discord-Status\target\debug\deps\libwindows_result-bdc4299781803d51.rmeta: C:\Users\Hibik\.cargo\registry\src\index.crates.io-6f17d22bba15001f\windows-result-0.2.0\src/lib.rs C:\Users\Hibik\.cargo\registry\src\index.crates.io-6f17d22bba15001f\windows-result-0.2.0\src\bindings.rs C:\Users\Hibik\.cargo\registry\src\index.crates.io-6f17d22bba15001f\windows-result-0.2.0\src\com.rs C:\Users\Hibik\.cargo\registry\src\index.crates.io-6f17d22bba15001f\windows-result-0.2.0\src\strings.rs C:\Users\Hibik\.cargo\registry\src\index.crates.io-6f17d22bba15001f\windows-result-0.2.0\src\bstr.rs C:\Users\Hibik\.cargo\registry\src\index.crates.io-6f17d22bba15001f\windows-result-0.2.0\src\error.rs C:\Users\Hibik\.cargo\registry\src\index.crates.io-6f17d22bba15001f\windows-result-0.2.0\src\hresult.rs
+
+D:\Programming\Rust\Discord-Status\target\debug\deps\windows_result-bdc4299781803d51.d: C:\Users\Hibik\.cargo\registry\src\index.crates.io-6f17d22bba15001f\windows-result-0.2.0\src/lib.rs C:\Users\Hibik\.cargo\registry\src\index.crates.io-6f17d22bba15001f\windows-result-0.2.0\src\bindings.rs C:\Users\Hibik\.cargo\registry\src\index.crates.io-6f17d22bba15001f\windows-result-0.2.0\src\com.rs C:\Users\Hibik\.cargo\registry\src\index.crates.io-6f17d22bba15001f\windows-result-0.2.0\src\strings.rs C:\Users\Hibik\.cargo\registry\src\index.crates.io-6f17d22bba15001f\windows-result-0.2.0\src\bstr.rs C:\Users\Hibik\.cargo\registry\src\index.crates.io-6f17d22bba15001f\windows-result-0.2.0\src\error.rs C:\Users\Hibik\.cargo\registry\src\index.crates.io-6f17d22bba15001f\windows-result-0.2.0\src\hresult.rs
+
+C:\Users\Hibik\.cargo\registry\src\index.crates.io-6f17d22bba15001f\windows-result-0.2.0\src/lib.rs:
+C:\Users\Hibik\.cargo\registry\src\index.crates.io-6f17d22bba15001f\windows-result-0.2.0\src\bindings.rs:
+C:\Users\Hibik\.cargo\registry\src\index.crates.io-6f17d22bba15001f\windows-result-0.2.0\src\com.rs:
+C:\Users\Hibik\.cargo\registry\src\index.crates.io-6f17d22bba15001f\windows-result-0.2.0\src\strings.rs:
+C:\Users\Hibik\.cargo\registry\src\index.crates.io-6f17d22bba15001f\windows-result-0.2.0\src\bstr.rs:
+C:\Users\Hibik\.cargo\registry\src\index.crates.io-6f17d22bba15001f\windows-result-0.2.0\src\error.rs:
+C:\Users\Hibik\.cargo\registry\src\index.crates.io-6f17d22bba15001f\windows-result-0.2.0\src\hresult.rs:

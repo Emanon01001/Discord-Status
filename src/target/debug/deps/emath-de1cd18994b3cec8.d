@@ -1,0 +1,13 @@
+D:\Programming\Rust\Discord-Status\target\debug\deps\libemath-de1cd18994b3cec8.rmeta: C:\Users\Hibik\.cargo\registry\src\index.crates.io-6f17d22bba15001f\emath-0.17.0\src\lib.rs C:\Users\Hibik\.cargo\registry\src\index.crates.io-6f17d22bba15001f\emath-0.17.0\src\align.rs C:\Users\Hibik\.cargo\registry\src\index.crates.io-6f17d22bba15001f\emath-0.17.0\src\numeric.rs C:\Users\Hibik\.cargo\registry\src\index.crates.io-6f17d22bba15001f\emath-0.17.0\src\pos2.rs C:\Users\Hibik\.cargo\registry\src\index.crates.io-6f17d22bba15001f\emath-0.17.0\src\rect.rs C:\Users\Hibik\.cargo\registry\src\index.crates.io-6f17d22bba15001f\emath-0.17.0\src\rect_transform.rs C:\Users\Hibik\.cargo\registry\src\index.crates.io-6f17d22bba15001f\emath-0.17.0\src\rot2.rs C:\Users\Hibik\.cargo\registry\src\index.crates.io-6f17d22bba15001f\emath-0.17.0\src\smart_aim.rs C:\Users\Hibik\.cargo\registry\src\index.crates.io-6f17d22bba15001f\emath-0.17.0\src\vec2.rs
+
+D:\Programming\Rust\Discord-Status\target\debug\deps\emath-de1cd18994b3cec8.d: C:\Users\Hibik\.cargo\registry\src\index.crates.io-6f17d22bba15001f\emath-0.17.0\src\lib.rs C:\Users\Hibik\.cargo\registry\src\index.crates.io-6f17d22bba15001f\emath-0.17.0\src\align.rs C:\Users\Hibik\.cargo\registry\src\index.crates.io-6f17d22bba15001f\emath-0.17.0\src\numeric.rs C:\Users\Hibik\.cargo\registry\src\index.crates.io-6f17d22bba15001f\emath-0.17.0\src\pos2.rs C:\Users\Hibik\.cargo\registry\src\index.crates.io-6f17d22bba15001f\emath-0.17.0\src\rect.rs C:\Users\Hibik\.cargo\registry\src\index.crates.io-6f17d22bba15001f\emath-0.17.0\src\rect_transform.rs C:\Users\Hibik\.cargo\registry\src\index.crates.io-6f17d22bba15001f\emath-0.17.0\src\rot2.rs C:\Users\Hibik\.cargo\registry\src\index.crates.io-6f17d22bba15001f\emath-0.17.0\src\smart_aim.rs C:\Users\Hibik\.cargo\registry\src\index.crates.io-6f17d22bba15001f\emath-0.17.0\src\vec2.rs
+
+C:\Users\Hibik\.cargo\registry\src\index.crates.io-6f17d22bba15001f\emath-0.17.0\src\lib.rs:
+C:\Users\Hibik\.cargo\registry\src\index.crates.io-6f17d22bba15001f\emath-0.17.0\src\align.rs:
+C:\Users\Hibik\.cargo\registry\src\index.crates.io-6f17d22bba15001f\emath-0.17.0\src\numeric.rs:
+C:\Users\Hibik\.cargo\registry\src\index.crates.io-6f17d22bba15001f\emath-0.17.0\src\pos2.rs:
+C:\Users\Hibik\.cargo\registry\src\index.crates.io-6f17d22bba15001f\emath-0.17.0\src\rect.rs:
+C:\Users\Hibik\.cargo\registry\src\index.crates.io-6f17d22bba15001f\emath-0.17.0\src\rect_transform.rs:
+C:\Users\Hibik\.cargo\registry\src\index.crates.io-6f17d22bba15001f\emath-0.17.0\src\rot2.rs:
+C:\Users\Hibik\.cargo\registry\src\index.crates.io-6f17d22bba15001f\emath-0.17.0\src\smart_aim.rs:
+C:\Users\Hibik\.cargo\registry\src\index.crates.io-6f17d22bba15001f\emath-0.17.0\src\vec2.rs:
