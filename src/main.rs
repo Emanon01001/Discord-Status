@@ -15,13 +15,10 @@ use tracing::{error, info};
 use tracing_subscriber::fmt::time::OffsetTime;
 use tracing_subscriber::{layer::SubscriberExt, Layer, Registry};
 
-const APP_ID: ds::AppId = 1321125815941075007;
+const APP_ID: ds::AppId = ;
 
-/// アプリ全体で共有するログバッファ (tracing用)
-/// - std::sync::Mutex にすることで on_event で同期的に lock して書き込める
 static LOGS: Lazy<Mutex<Vec<String>>> = Lazy::new(|| Mutex::new(Vec::new()));
 
-/// tracingのイベントをフィールドごとに文字列化するための簡易Visitor
 #[derive(Default)]
 struct StringVisitor {
     output: String,
@@ -29,13 +26,10 @@ struct StringVisitor {
 
 impl tracing::field::Visit for StringVisitor {
     fn record_debug(&mut self, field: &tracing::field::Field, value: &dyn std::fmt::Debug) {
-        // フィールド名=値 の形式で追記する
         use std::fmt::Write as _;
         let _ = write!(self.output, "{}={:?} ", field.name(), value);
     }
 }
-
-/// tracingのイベントをフックして LOGS に追加する Layer 実装
 struct LogCaptureLayer;
 
 impl<S> Layer<S> for LogCaptureLayer
@@ -47,49 +41,34 @@ where
         event: &tracing::Event<'_>,
         _ctx: tracing_subscriber::layer::Context<'_, S>,
     ) {
-        // イベントフィールドを visitor で文字列化
         let mut visitor = StringVisitor::default();
         event.record(&mut visitor);
 
-        // LOGS へ同期的に push
         let mut logs = LOGS.lock().unwrap();
         logs.push(visitor.output);
     }
 }
 
-/// tracingの初期化
 fn setup_logging() {
-    // 時刻付きフォーマットなど (お好みで)
     let timer = OffsetTime::local_rfc_3339().expect("cannot get local offset");
     let fmt_layer = tracing_subscriber::fmt::layer()
         .with_timer(timer)
-        .with_target(false) // ログのターゲット名を表示しない
+        .with_target(false)
         .with_thread_ids(false);
 
-    // LogCaptureLayer + fmt_layer を registry に合体
     let subscriber = Registry::default().with(fmt_layer).with(LogCaptureLayer);
 
     tracing::subscriber::set_global_default(subscriber)
         .expect("failed to set global default subscriber");
 }
 
-// ----------------------
-// アプリケーション全体の状態
-// ----------------------
-/// Discord への接続状態などを保持する。こちらは非同期操作するので tokio::sync::Mutex を使う。
 #[derive(Default)]
 struct AppState {
-    /// 現在接続中の Discordインスタンス (無いかもしれない)
     discord: Option<Discord>,
 }
 
-/// eguiアプリの本体
-/// - リッチプレゼンスの各種文字列はここで保持 (UI専用データ)
-/// - Discord への接続状態は shared(AppState) に保持
 struct MyEguiApp {
     shared: Arc<AsyncMutex<AppState>>,
-
-    // 以下はUI上で編集するためのローカルデータ
     details: String,
     state: String,
     large_img: String,
@@ -105,10 +84,7 @@ impl MyEguiApp {
         setup_custom_fonts(&cc.egui_ctx);
 
         Self {
-            // Discord接続状態などを保持
             shared: Arc::new(AsyncMutex::new(AppState::default())),
-
-            // リッチプレゼンス編集用の初期値
             details: "".into(),
             state: "".into(),
             large_img: "85248977".into(),
@@ -123,9 +99,6 @@ impl MyEguiApp {
 
 fn setup_custom_fonts(ctx: &egui::Context) {
     let mut fonts = egui::FontDefinitions::default();
-
-    // 例として、プロジェクト内の "assets/NotoSansJP-Regular.otf" を同梱している想定
-    // 実際のパスやファイル名はプロジェクト構成に合わせて調整してください。
     fonts.font_data.insert(
         "meiryo".to_owned(),
         egui::FontData::from_static(include_bytes!(
@@ -134,33 +107,26 @@ fn setup_custom_fonts(ctx: &egui::Context) {
         .into(),
     );
 
-    // Proportional / Monospace 両方に、日本語フォントを先頭に追加
     if let Some(proportional) = fonts.families.get_mut(&egui::FontFamily::Proportional) {
         proportional.insert(0, "meiryo".to_owned());
     }
     if let Some(monospace) = fonts.families.get_mut(&egui::FontFamily::Monospace) {
         monospace.insert(0, "meiryo".to_owned());
     }
-
-    // 設定を適用
     ctx.set_fonts(fonts);
 }
 
 impl App for MyEguiApp {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        // ダークモード＆角丸などのスタイル設定
         let mut style = (*ctx.style()).clone();
         style.visuals = Visuals::dark();
         style.visuals.widgets.inactive.rounding = Rounding::same(8.0);
         ctx.set_style(style.clone());
-
-        // === 中央パネル ===
+        
         egui::CentralPanel::default().show(ctx, |ui| {
             ui.heading("Discord Connect / Disconnect Example");
 
             ui.separator();
-
-            // --- Rich Presence Basic Info ---
             ui.collapsing("Rich Presence Basic Info", |ui| {
                 ui.horizontal(|ui| {
                     ui.label("Details:");
@@ -172,7 +138,6 @@ impl App for MyEguiApp {
                 });
             });
 
-            // --- Images ---
             ui.collapsing("Images", |ui| {
                 ui.horizontal(|ui| {
                     ui.label("Large Key:");
@@ -192,7 +157,6 @@ impl App for MyEguiApp {
                 });
             });
 
-            // --- Button ---
             ui.collapsing("Button", |ui| {
                 ui.horizontal(|ui| {
                     ui.label("Label:");
@@ -206,9 +170,6 @@ impl App for MyEguiApp {
 
             ui.separator();
 
-            // -------------------------------------------------
-            // Start / Stop ボタン
-            // -------------------------------------------------
             ui.horizontal(|ui| {
                 if ui.button("Start").clicked() {
                     let shared_clone = self.shared.clone();
@@ -229,12 +190,8 @@ impl App for MyEguiApp {
                 }
             });
 
-            // -------------------------------------------------
-            // Activity ボタン (Update / Clear)
-            // -------------------------------------------------
             ui.horizontal(|ui| {
                 if ui.button("Update Activity").clicked() {
-                    // UIの入力データをコピーして非同期タスクに渡す
                     let details = self.details.clone();
                     let state_str = self.state.clone();
                     let l_img = self.large_img.clone();
@@ -274,9 +231,7 @@ impl App for MyEguiApp {
                 }
             });
         });
-
-        // === 右パネル (ログ表示) ===
-        // 幅を300pxに固定。リサイズできないようにする
+        
         egui::SidePanel::right("LogPanel")
             .resizable(true)
             .min_width(400.0)
@@ -286,9 +241,7 @@ impl App for MyEguiApp {
                 ui.separator();
 
                 ScrollArea::vertical().show(ui, |ui| {
-                    // グローバルログバッファを参照 (同期Mutexなので try_lock でも block でもOK)
                     if let Ok(logs) = LOGS.try_lock() {
-                        // 新しい順に表示したいなら logs.iter().rev() などにする
                         for line in logs.iter() {
                             ui.label(line);
                         }
@@ -299,10 +252,6 @@ impl App for MyEguiApp {
             });
     }
 }
-
-// --------------------------
-// 非同期関数群 (Discordとのやりとり)
-// --------------------------
 
 async fn connect_discord(shared: Arc<AsyncMutex<AppState>>) -> anyhow::Result<()> {
     let mut state = shared.lock().await;
@@ -332,11 +281,9 @@ async fn connect_discord(shared: Arc<AsyncMutex<AppState>>) -> anyhow::Result<()
         }
         ds::wheel::UserState::Disconnected(err) => {
             error!("failed to connect to Discord: {}", err);
-            return Ok(()); // あるいは bail!(err)
+            return Ok(());
         }
     };
-
-    // Activity イベントを受信してログを出す
     let mut activity_events = wheel.activity();
     tokio::spawn(async move {
         while let Ok(evt) = activity_events.0.recv().await {
@@ -344,7 +291,6 @@ async fn connect_discord(shared: Arc<AsyncMutex<AppState>>) -> anyhow::Result<()
         }
     });
 
-    // Discordインスタンスを保存
     state.discord = Some(discord);
 
     Ok(())
@@ -408,16 +354,11 @@ async fn clear_activity(shared: Arc<AsyncMutex<AppState>>) -> anyhow::Result<()>
     Ok(())
 }
 
-// -----------------
-// エントリポイント
-// -----------------
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    // 1) tracing初期化
     setup_logging();
     info!("Application started.");
 
-    // 2) eframe + eguiでGUI起動
     let native_options = NativeOptions {
         vsync: true,
         multisampling: 0,
