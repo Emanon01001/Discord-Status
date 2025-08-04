@@ -15,7 +15,7 @@ use tracing::{error, info};
 use tracing_subscriber::fmt::time::OffsetTime;
 use tracing_subscriber::{layer::SubscriberExt, Layer, Registry};
 
-const APP_ID: ds::AppId = ;
+const APP_ID: ds::AppId = 1234;
 
 static LOGS: Lazy<Mutex<Vec<String>>> = Lazy::new(|| Mutex::new(Vec::new()));
 
@@ -26,12 +26,12 @@ struct StringVisitor {
 
 impl tracing::field::Visit for StringVisitor {
     fn record_debug(&mut self, field: &tracing::field::Field, value: &dyn std::fmt::Debug) {
-        // フィールド名=値 の形式で追記する
         use std::fmt::Write as _;
         let _ = write!(self.output, "{}={:?} ", field.name(), value);
     }
 }
 
+/// tracingのイベントをフックして LOGS に追加する Layer 実装
 struct LogCaptureLayer;
 
 impl<S> Layer<S> for LogCaptureLayer
@@ -43,11 +43,9 @@ where
         event: &tracing::Event<'_>,
         _ctx: tracing_subscriber::layer::Context<'_, S>,
     ) {
-        // イベントフィールドを visitor で文字列化
         let mut visitor = StringVisitor::default();
         event.record(&mut visitor);
 
-        // LOGS へ同期的に push
         let mut logs = LOGS.lock().unwrap();
         logs.push(visitor.output);
     }
@@ -74,6 +72,7 @@ struct AppState {
 struct MyEguiApp {
     shared: Arc<AsyncMutex<AppState>>,
 
+    // 以下はUI上で編集するためのローカルデータ
     details: String,
     state: String,
     large_img: String,
@@ -91,6 +90,7 @@ impl MyEguiApp {
         Self {
             shared: Arc::new(AsyncMutex::new(AppState::default())),
 
+            // リッチプレゼンス編集用の初期値
             details: "".into(),
             state: "".into(),
             large_img: "85248977".into(),
@@ -106,6 +106,8 @@ impl MyEguiApp {
 fn setup_custom_fonts(ctx: &egui::Context) {
     let mut fonts = egui::FontDefinitions::default();
 
+    // 例として、プロジェクト内の "assets/NotoSansJP-Regular.otf" を同梱している想定
+    // 実際のパスやファイル名はプロジェクト構成に合わせて調整してください。
     fonts.font_data.insert(
         "meiryo".to_owned(),
         egui::FontData::from_static(include_bytes!("./meiryo.ttc")).into(),
@@ -117,8 +119,6 @@ fn setup_custom_fonts(ctx: &egui::Context) {
     if let Some(monospace) = fonts.families.get_mut(&egui::FontFamily::Monospace) {
         monospace.insert(0, "meiryo".to_owned());
     }
-
-    // 設定を適用
     ctx.set_fonts(fonts);
 }
 
@@ -129,11 +129,13 @@ impl App for MyEguiApp {
         style.visuals.widgets.inactive.rounding = Rounding::same(8.0);
         ctx.set_style(style.clone());
 
+        // === 中央パネル ===
         egui::CentralPanel::default().show(ctx, |ui| {
             ui.heading("Discord Connect / Disconnect Example");
 
             ui.separator();
 
+            // --- Rich Presence Basic Info ---
             ui.collapsing("Rich Presence Basic Info", |ui| {
                 ui.horizontal(|ui| {
                     ui.label("Details:");
@@ -239,6 +241,8 @@ impl App for MyEguiApp {
             });
         });
 
+        // === 右パネル (ログ表示) ===
+        // 幅を300pxに固定。リサイズできないようにする
         egui::SidePanel::right("LogPanel")
             .resizable(true)
             .min_width(400.0)
@@ -248,9 +252,7 @@ impl App for MyEguiApp {
                 ui.separator();
 
                 ScrollArea::vertical().show(ui, |ui| {
-                    // グローバルログバッファを参照 (同期Mutexなので try_lock でも block でもOK)
                     if let Ok(logs) = LOGS.try_lock() {
-                        // 新しい順に表示したいなら logs.iter().rev() などにする
                         for line in logs.iter() {
                             ui.label(line);
                         }
@@ -261,10 +263,6 @@ impl App for MyEguiApp {
             });
     }
 }
-
-// --------------------------
-// 非同期関数群 (Discordとのやりとり)
-// --------------------------
 
 async fn connect_discord(shared: Arc<AsyncMutex<AppState>>) -> anyhow::Result<()> {
     let mut state = shared.lock().await;
@@ -293,10 +291,11 @@ async fn connect_discord(shared: Arc<AsyncMutex<AppState>>) -> anyhow::Result<()
         }
         ds::wheel::UserState::Disconnected(err) => {
             error!("failed to connect to Discord: {}", err);
-            return Ok(()); // あるいは bail!(err)
+            return Ok(());
         }
     };
 
+    // Activity イベントを受信してログを出す
     let mut activity_events = wheel.activity();
     tokio::spawn(async move {
         while let Ok(evt) = activity_events.0.recv().await {
@@ -369,11 +368,9 @@ async fn clear_activity(shared: Arc<AsyncMutex<AppState>>) -> anyhow::Result<()>
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    // 1) tracing初期化
     setup_logging();
     info!("Application started.");
 
-    // 2) eframe + eguiでGUI起動
     let native_options = NativeOptions {
         vsync: true,
         multisampling: 0,
